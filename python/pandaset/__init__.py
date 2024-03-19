@@ -2,3 +2,4 @@
 from .dataset import DataSet
 from .geometry import projection
 from .sequence import Sequence
+from .sensors import *

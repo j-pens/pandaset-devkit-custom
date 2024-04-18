@@ -80,7 +80,7 @@ class Sequence:
         """
         return self._semseg
 
-    def __init__(self, directory: str) -> None:
+    def __init__(self, directory: str, synthetic: bool = False) -> None:
         self._directory: str = directory
         self._lidar: Lidar = None
         self._camera: Dict[str, Camera] = None
@@ -88,6 +88,7 @@ class Sequence:
         self._timestamps: Timestamps = None
         self._cuboids: Cuboids = None
         self._semseg: SemanticSegmentation = None
+        self._synthetic: bool = synthetic
         self._load_data_structure()
 
     def _load_data_structure(self) -> None:
@@ -95,13 +96,13 @@ class Sequence:
 
         for dd in data_directories:
             if dd.endswith('lidar'):
-                self._lidar = Lidar(dd)
+                self._lidar = Lidar(dd, synthetic=self._synthetic)
             elif dd.endswith('camera'):
                 self._camera = {}
                 camera_directories = subdirectories(dd)
                 for cd in camera_directories:
                     camera_name = cd.split('/')[-1].split('\\')[-1]
-                    self._camera[camera_name] = Camera(cd)
+                    self._camera[camera_name] = Camera(cd, synthetic=self._synthetic)
             elif dd.endswith('meta'):
                 self._gps = GPS(dd)
                 self._timestamps = Timestamps(dd)

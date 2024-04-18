@@ -19,9 +19,10 @@ class DataSet:
             >>> s = pandaset['002']
         """
 
-    def __init__(self, directory: str) -> None:
+    def __init__(self, directory: str, synthetic: bool = False) -> None:
         self._directory: str = directory
         self._sequences: Dict[str, Sequence] = None
+        self._synthetic: bool = synthetic
         self._load_sequences()
 
     def __getitem__(self, item) -> Sequence:
@@ -34,7 +35,7 @@ class DataSet:
             if 'pandaset_gt_database' in sd:
                 continue
             seq_id = sd.split('/')[-1].split('\\')[-1]
-            self._sequences[seq_id] = Sequence(sd)
+            self._sequences[seq_id] = Sequence(sd, synthetic=self._synthetic)
 
     def sequences(self, with_semseg: bool = False) -> List[str]:
         """ Lists all available sequence names

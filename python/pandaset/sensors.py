@@ -58,7 +58,7 @@ class Sensor:
         """
         return self._timestamps
 
-    def __init__(self, directory: str) -> None:
+    def __init__(self, directory: str, synthetic: bool = False) -> None:
         self._directory: str = directory
         self._data_structure: List[str] = None
         self._data: List[T] = None
@@ -66,6 +66,7 @@ class Sensor:
         self._poses: List[Dict[str, T]] = None
         self._timestamps_structure: str = None
         self._timestamps: List[float] = None
+        self._synthetic: bool = synthetic
         self._load_structure()
 
     @overload
@@ -82,7 +83,8 @@ class Sensor:
     def _load_structure(self) -> None:
         self._load_data_structure()
         self._load_poses_structure()
-        self._load_timestamps_structure()
+        if not self._synthetic:
+            self._load_timestamps_structure()
 
     def _load_data_structure(self) -> None:
         self._data_structure = sorted(
@@ -105,7 +107,8 @@ class Sensor:
         """
         self._load_data()
         self._load_poses()
-        self._load_timestamps()
+        if not self._synthetic:
+            self._load_timestamps()
 
     def _load_data(self) -> None:
         self._data = []
@@ -198,9 +201,9 @@ class Lidar(Sensor):
         """
         return self._timestamps
 
-    def __init__(self, directory: str) -> None:
+    def __init__(self, directory: str, synthetic: bool = False) -> None:
         self._sensor_id = -1
-        Sensor.__init__(self, directory)
+        Sensor.__init__(self, directory, synthetic=synthetic)
 
     @overload
     def __getitem__(self, item: int) -> DataFrame:
@@ -283,10 +286,10 @@ class Camera(Sensor):
         """
         return self._intrinsics
 
-    def __init__(self, directory: str) -> None:
+    def __init__(self, directory: str, synthetic: bool = False) -> None:
         self._intrinsics_structure: str = None
         self._intrinsics: Intrinsics = None
-        Sensor.__init__(self, directory)
+        Sensor.__init__(self, directory, synthetic=synthetic)
 
     @overload
     def __getitem__(self, item: int) -> JpegImageFile:
